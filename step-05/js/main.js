@@ -9,8 +9,14 @@ var remoteStream;
 var turnReady;
 
 var pcConfig = {
-  'iceServers': [{
-    'urls': 'stun:stun.l.google.com:19302'
+  'iceServers': [
+//  {
+//    'urls': 'stun:stun.l.google.com:19302'
+//  },
+  {
+    "urls": 'turn:43.200.182.153:3478?transport=tcp',
+    "username":"jsheo",
+    "credential":"jsheo"
   }]
 };
 
@@ -118,7 +124,7 @@ var constraints = {
 
 console.log('Getting user media with constraints', constraints);
 
-if (location.hostname !== 'localhost') {
+if (location.hostname == 'localhost') {
   requestTurn(
     'https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913'
   );
@@ -146,7 +152,7 @@ window.onbeforeunload = function() {
 
 function createPeerConnection() {
   try {
-    pc = new RTCPeerConnection(null);
+    pc = new RTCPeerConnection(pcConfig);
     pc.onicecandidate = handleIceCandidate;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
@@ -208,6 +214,7 @@ function requestTurn(turnURL) {
       break;
     }
   }
+  console.log('turn exists: ', turnExists)
   if (!turnExists) {
     console.log('Getting TURN server from ', turnURL);
     // No TURN server. Get one from computeengineondemand.appspot.com:
